@@ -52,6 +52,7 @@ class AiConfiguration {
                 Always be helpful, accurate, and cite information from the tools when available.
             """.trimIndent())
             .defaultAdvisors(
+                InputGuardrailAdvisor(chatModel),
                 SimpleLoggerAdvisor(),
                 MessageChatMemoryAdvisor.builder(chatMemory).build()
             )

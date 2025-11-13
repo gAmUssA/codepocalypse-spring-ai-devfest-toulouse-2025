@@ -20,6 +20,10 @@ class AiService(private val chatClient: ChatClient) {
                 .content() ?: ""
             logger.debug("Received response from AI model")
             result
+        } catch (e: IllegalArgumentException) {
+            // Guardrail rejection - return the message to the user
+            logger.info("Query rejected by guardrail: ${e.message}")
+            e.message ?: "Query rejected by guardrail"
         } catch (e: Exception) {
             logger.error("Error processing query with AI model", e)
             throw e

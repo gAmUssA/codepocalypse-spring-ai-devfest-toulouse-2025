@@ -24,7 +24,7 @@ extra["springAiVersion"] = "1.0.3"
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
-    implementation("org.springframework.ai:spring-ai-starter-model-openai")
+    implementation("org.springframework.ai:spring-ai-starter-model-ollama")
     implementation("org.springframework.ai:spring-ai-pdf-document-reader")
     implementation("org.springframework.ai:spring-ai-starter-mcp-server-webmvc")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
