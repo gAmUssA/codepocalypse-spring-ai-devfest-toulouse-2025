@@ -9,6 +9,15 @@ spring:
         options:
           model: gpt-5
           temperature: 1
+    mcp:
+      server:
+        sse-enabled: true
+        name: aviation-weather-server
+        version: 1.0.0
+        type: SYNC
+        instructions: "This server provides aviation weather information tools for airports worldwide"
+        capabilities:
+          tool: true
 
 server:
   port: 8080
