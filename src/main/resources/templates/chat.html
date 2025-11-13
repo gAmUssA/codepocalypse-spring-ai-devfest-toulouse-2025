@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airline Loyalty Assistant</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container">
+        <h1>Airline Loyalty Assistant</h1>
+        
+        <form method="post" action="/chat" id="chatForm">
+            <input type="text" 
+                   name="query" 
+                   placeholder="Ask a question about airline loyalty programs..." 
+                   th:value="${query}"
+                   class="query-input"
+                   id="queryInput"
+                   required>
+            <button type="submit" class="submit-button" id="submitButton">Ask Question</button>
+        </form>
+        
+        <div id="loadingMessage" class="loading-message" style="display: none;">
+            <div class="spinner"></div>
+            <p>Processing your question...</p>
+        </div>
+        
+        <div th:if="${error}" class="error-message">
+            <p th:text="${error}"></p>
+        </div>
+        
+        <div th:if="${response}" class="response-display">
+            <h2>Response:</h2>
+            <p th:text="${response}"></p>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('chatForm').addEventListener('submit', function(e) {
+            const queryInput = document.getElementById('queryInput');
+            const submitButton = document.getElementById('submitButton');
+            const loadingMessage = document.getElementById('loadingMessage');
+            
+            if (queryInput.value.trim()) {
+                submitButton.disabled = true;
+                submitButton.textContent = 'Processing...';
+                loadingMessage.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
