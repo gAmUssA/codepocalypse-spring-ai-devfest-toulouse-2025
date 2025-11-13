@@ -2,14 +2,26 @@ package com.airline.loyalty.config
 
 import org.springframework.ai.chat.client.ChatClient
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor
+import org.springframework.ai.chat.client.advisor.vectorstore.QuestionAnswerAdvisor
 import org.springframework.ai.chat.memory.ChatMemory
 import org.springframework.ai.chat.memory.MessageWindowChatMemory
 import org.springframework.ai.chat.model.ChatModel
+import org.springframework.ai.embedding.EmbeddingModel
+import org.springframework.ai.vectorstore.SearchRequest
+import org.springframework.ai.vectorstore.SimpleVectorStore
+import org.springframework.ai.vectorstore.VectorStore
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.scheduling.annotation.EnableAsync
 
 @Configuration
+@EnableAsync
 class AiConfiguration {
+    
+    @Bean
+    fun vectorStore(embeddingModel: EmbeddingModel): VectorStore {
+        return SimpleVectorStore.builder(embeddingModel).build()
+    }
     
     @Bean
     fun chatMemory(): ChatMemory {
@@ -19,29 +31,32 @@ class AiConfiguration {
     }
     
     @Bean
-    fun chatClient(chatModel: ChatModel, chatMemory: ChatMemory): ChatClient {
+    fun chatClient(chatModel: ChatModel, chatMemory: ChatMemory, vectorStore: VectorStore): ChatClient {
         return ChatClient.builder(chatModel)
             .defaultSystem("""
-                You are a helpful airline loyalty program assistant specializing in Delta SkyMiles and United MileagePlus.
-                You have access to tools that provide current qualification requirements from official airline sources.
-                Use these tools when answering questions about:
-                - Status qualification requirements (MQMs, MQDs, PQPs, PQFs, etc.)
-                - Elite tier benefits
-                - How to earn or maintain status
+                You are a helpful airline loyalty program assistant specializing in Delta SkyMiles 
+                and United MileagePlus programs.
                 
-                Always use the tools to get accurate, up-to-date information rather than relying on potentially outdated knowledge.
+                Use the provided context from official airline websites to answer questions accurately.
+                If the information is in the context, provide specific details about qualification 
+                requirements, benefits, and program rules.
                 
-                IMPORTANT: Remember user details shared during the conversation, including:
-                - Names and personal information
-                - Preferences and travel patterns
-                - Previous questions and context
-                - Any specific situations or goals they mention
+                If the answer is not in the provided context, acknowledge this and provide general 
+                guidance or suggest checking the official airline website.
                 
-                Use this context to provide personalized and contextual responses throughout the conversation.
+                Always be helpful, accurate, and cite information from the context when available.
             """.trimIndent())
             .defaultAdvisors(
                 SimpleLoggerAdvisor(),
-                MessageChatMemoryAdvisor.builder(chatMemory).build()
+                MessageChatMemoryAdvisor.builder(chatMemory).build(),
+                QuestionAnswerAdvisor.builder(vectorStore)
+                    .searchRequest(
+                        SearchRequest.builder()
+                            .topK(3)
+                            .similarityThreshold(0.4)
+                            .build()
+                    )
+                    .build()
             )
             .build()
     }
