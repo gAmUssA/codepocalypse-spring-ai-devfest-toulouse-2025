@@ -1,0 +1,11 @@
+spring:
+  ai:
+    openai:
+      api-key: ${SPRING_AI_OPENAI_API_KEY}
+      chat:
+        options:
+          model: gpt-5
+          temperature: 1
+
+server:
+  port: 8080
