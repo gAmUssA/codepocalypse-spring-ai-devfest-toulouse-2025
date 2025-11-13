@@ -2,6 +2,9 @@ spring:
   ai:
     openai:
       api-key: ${SPRING_AI_OPENAI_API_KEY}
+      embedding:
+        options:
+          model: text-embedding-3-small
       chat:
         options:
           model: gpt-5
@@ -9,9 +12,3 @@ spring:
 
 server:
   port: 8080
-
-logging:
-  level:
-    org.springframework.ai.chat.client: DEBUG
-    org.springframework.ai.openai: DEBUG
-    com.airline.loyalty.config.SimpleLoggerAdvisor: DEBUG
